@@ -1,0 +1,897 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="以太坊私链搭建, php,laravel">
+    <meta name="description" content="以太坊钱包目前主要有两个，geth 和 parity。这里我们以 geth 为例子。
+安装 GethMacbrew tap ethereum/ethereum
+brew install ethereum
+
+Ubuntusudo apt-ge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>以太坊私链搭建 | LDL&#39;s Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <style type="text/css">
+        
+    </style>
+
+    <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+
+<header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">LDL's Blog</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fa fa-navicon"></i></a>
+<ul class="right">
+    
+    <li class="hide-on-med-and-down">
+        <a href="/" class="waves-effect waves-light">
+            
+            <i class="fa fa-home"></i>
+            
+            <span>首页</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/tags" class="waves-effect waves-light">
+            
+            <i class="fa fa-tags"></i>
+            
+            <span>标签</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/categories" class="waves-effect waves-light">
+            
+            <i class="fa fa-bookmark"></i>
+            
+            <span>分类</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/archives" class="waves-effect waves-light">
+            
+            <i class="fa fa-archive"></i>
+            
+            <span>归档</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/about" class="waves-effect waves-light">
+            
+            <i class="fa fa-user-circle-o"></i>
+            
+            <span>关于</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/friends" class="waves-effect waves-light">
+            
+            <i class="fa fa-address-book"></i>
+            
+            <span>友情链接</span>
+        </a>
+    </li>
+    
+    <li>
+        <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+            <i id="searchIcon" class="fa fa-search" title="搜索"></i>
+        </a>
+    </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">LDL's Blog</div>
+        <div class="logo-desc">
+            
+            Never really desperate, only the lost of the soul.
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li>
+            <a href="/" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-home"></i>
+                
+                首页
+            </a>
+        </li>
+        
+        <li>
+            <a href="/tags" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-tags"></i>
+                
+                标签
+            </a>
+        </li>
+        
+        <li>
+            <a href="/categories" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-bookmark"></i>
+                
+                分类
+            </a>
+        </li>
+        
+        <li>
+            <a href="/archives" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-archive"></i>
+                
+                归档
+            </a>
+        </li>
+        
+        <li>
+            <a href="/about" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-user-circle-o"></i>
+                
+                关于
+            </a>
+        </li>
+        
+        <li>
+            <a href="/friends" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-address-book"></i>
+                
+                友情链接
+            </a>
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/lidelin" class="waves-effect waves-light" target="_blank">
+                <i class="fa fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/lidelin" class="github-corner tooltipped hide-on-med-and-down" target="_blank" data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewbox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/1.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        以太坊私链搭建
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 20px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/ethereum/" target="_blank">
+                                <span class="chip bg-color">ethereum</span>
+                            </a>
+                        
+                            <a href="/tags/blockchain/" target="_blank">
+                                <span class="chip bg-color">blockchain</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                <div class="post-date info-break-policy">
+                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2018-08-06
+                </div>
+
+                
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
+                        859
+                    </div>
+                    
+
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                        4 分
+                    </div>
+                    
+                
+				
+				
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="fa fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>以太坊钱包目前主要有两个，geth 和 parity。这里我们以 geth 为例子。</p>
+<h1 id="安装-Geth"><a href="#安装-Geth" class="headerlink" title="安装 Geth"></a>安装 Geth</h1><h2 id="Mac"><a href="#Mac" class="headerlink" title="Mac"></a>Mac</h2><pre class=" language-bash"><code class="language-bash">brew tap ethereum/ethereum
+brew <span class="token function">install</span> ethereum
+</code></pre>
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> software-properties-common
+<span class="token function">sudo</span> add-apt-repository -y ppa:ethereum/ethereum
+<span class="token function">sudo</span> <span class="token function">apt-get</span> update
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> ethereumsudo <span class="token function">apt-get</span> instal
+</code></pre>
+<h1 id="创建创世块"><a href="#创建创世块" class="headerlink" title="创建创世块"></a>创建创世块</h1><h2 id="定义创世块配置"><a href="#定义创世块配置" class="headerlink" title="定义创世块配置"></a>定义创世块配置</h2><p>创建一个名为 genesis.json 的文件，文件内容如下：</p>
+<pre class=" language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"config"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"chainId"</span><span class="token operator">:</span> <span class="token number">22</span><span class="token punctuation">,</span>
+        <span class="token property">"homesteadBlock"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+        <span class="token property">"eip155Block"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+        <span class="token property">"eip158Block"</span><span class="token operator">:</span> <span class="token number">0</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"alloc"</span>      <span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"coinbase"</span>   <span class="token operator">:</span> <span class="token string">"0x0000000000000000000000000000000000000000"</span><span class="token punctuation">,</span>
+  <span class="token property">"difficulty"</span> <span class="token operator">:</span> <span class="token string">"0x4"</span><span class="token punctuation">,</span>
+  <span class="token property">"extraData"</span>  <span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"gasLimit"</span>   <span class="token operator">:</span> <span class="token string">"0x2fefd8"</span><span class="token punctuation">,</span>
+  <span class="token property">"nonce"</span>      <span class="token operator">:</span> <span class="token string">"0x0000000000000042"</span><span class="token punctuation">,</span>
+  <span class="token property">"mixhash"</span>    <span class="token operator">:</span> <span class="token string">"0x0000000000000000000000000000000000000000000000000000000000000000"</span><span class="token punctuation">,</span>
+  <span class="token property">"parentHash"</span> <span class="token operator">:</span> <span class="token string">"0x0000000000000000000000000000000000000000000000000000000000000000"</span><span class="token punctuation">,</span>
+  <span class="token property">"timestamp"</span>  <span class="token operator">:</span> <span class="token string">"0x00"</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>以上配置文件中，</p>
+<ul>
+<li><p>chainId<br>  标识当前网络，raw transaction 的参数之一。<br>  公链主要有以下几种：</p>
+<pre><code>&quot;1&quot;: Ethereum Mainnet
+&quot;2&quot;: Morden Testnet (deprecated)
+&quot;3&quot;: Ropsten Testnet
+&quot;4&quot;: Rinkeby Testnet
+&quot;42&quot;: Kovan Testnet
+</code></pre><p>  因为我们是私链，所以定义了一个跟上面 5 个配置不一样的数字</p>
+</li>
+<li><p>alloc<br>  预先给某些账号充值 eth<br>  配置方式如下：</p>
+<pre class=" language-json"><code class="language-json"><span class="token property">"alloc"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+<span class="token property">"0x0000000000000000000000000000000000000001"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token property">"balance"</span><span class="token operator">:</span> <span class="token string">"111111111"</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token property">"0x0000000000000000000000000000000000000002"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token property">"balance"</span><span class="token operator">:</span> <span class="token string">"222222222"</span><span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+</li>
+<li><p>coinbase<br>  挖矿收益账号</p>
+</li>
+<li><p>difficulty<br>  挖矿难度</p>
+</li>
+</ul>
+<h2 id="初始化创世块"><a href="#初始化创世块" class="headerlink" title="初始化创世块"></a>初始化创世块</h2><p>在控制台输入以下命令：</p>
+<pre class=" language-bash"><code class="language-bash">geth init genesis.json --datadir <span class="token string">"/Users/lidelin/work/blockchain/ethereum/node1"</span>
+</code></pre>
+<p>–datadir 参数用来指定存放数据的目录。</p>
+<h1 id="挖矿"><a href="#挖矿" class="headerlink" title="挖矿"></a>挖矿</h1><h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><p>创建了创世块后，可以输以下命令来启动</p>
+<pre class=" language-bash"><code class="language-bash">geth --networkid 123 --datadir <span class="token string">"/Users/lidelin/work/blockchain/ethereum/node1"</span> console
+</code></pre>
+<p>console 表示启动命令行。</p>
+<h2 id="创建以太坊账号"><a href="#创建以太坊账号" class="headerlink" title="创建以太坊账号"></a>创建以太坊账号</h2><pre class=" language-bash"><code class="language-bash">personal.newAccount<span class="token punctuation">(</span><span class="token string">"123456"</span><span class="token punctuation">)</span>
+</code></pre>
+<h2 id="设置挖矿收益账号"><a href="#设置挖矿收益账号" class="headerlink" title="设置挖矿收益账号"></a>设置挖矿收益账号</h2><pre class=" language-bash"><code class="language-bash">miner.setEtherbase<span class="token punctuation">(</span><span class="token string">"0x6b26ff6fa4a85e612158438fe1ed2c613aa6dfe0"</span><span class="token punctuation">)</span>
+</code></pre>
+<h2 id="查询账号余额"><a href="#查询账号余额" class="headerlink" title="查询账号余额"></a>查询账号余额</h2><pre class=" language-bash"><code class="language-bash">web3.fromWei<span class="token punctuation">(</span>eth.getBalance<span class="token punctuation">(</span><span class="token string">"0x6b26ff6fa4a85e612158438fe1ed2c613aa6dfe0"</span><span class="token punctuation">)</span>,<span class="token string">"ether"</span><span class="token punctuation">)</span>
+</code></pre>
+<p>可以看到当前 0x6b26ff6fa4a85e612158438fe1ed2c613aa6dfe0 的余额为 0。</p>
+<h2 id="开始挖矿"><a href="#开始挖矿" class="headerlink" title="开始挖矿"></a>开始挖矿</h2><pre class=" language-bash"><code class="language-bash">miner.start<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p>当出现</p>
+<pre><code>INFO [08-06|01:56:51] Successfully sealed new block            number=6 hash=f05319…22410d
+INFO [08-06|01:56:51] 🔗 block reached canonical chain          number=1 hash=ec8c28…b42fe3
+INFO [08-06|01:56:51] 🔨 mined potential block                  number=6 hash=f05319…22410d
+INFO [08-06|01:56:51] Commit new mining work                   number=7 txs=0 uncles=0 elapsed=257.575µs
+INFO [08-06|01:56:51] Successfully sealed new block            number=7 hash=59ce4d…b8b6e2
+INFO [08-06|01:56:51] 🔗 block reached canonical chain          number=2 hash=b11c41…45a91e
+INFO [08-06|01:56:51] 🔨 mined potential block                  number=7 hash=59ce4d…b8b6e2
+INFO [08-06|01:56:51] Commit new mining work                   number=8 txs=0 uncles=0 elapsed=1.432ms
+INFO [08-06|01:56:52] Successfully sealed new block            number=8 hash=5a7c7f…6e1dab
+INFO [08-06|01:56:52] 🔗 block reached canonical chain          number=3 hash=6b4b4f…0f53d9
+INFO [08-06|01:56:52] 🔨 mined potential block                  number=8 hash=5a7c7f…6e1dab
+INFO [08-06|01:56:52] Commit new mining work                   number=9 txs=0 uncles=0 elapsed=275.508µs
+</code></pre><p>表示开始挖矿。<br>此时再查账号余额，可以发现值不为 0 了。</p>
+<h1 id="节点同步"><a href="#节点同步" class="headerlink" title="节点同步"></a>节点同步</h1><p>数据目录路径：<br>节点 1 ：/Users/lidelin/work/blockchain/ethereum/node1<br>节点 2 ：/Users/lidelin/work/blockchain/ethereum/node2</p>
+<p>我们把正在挖矿的终端叫终端 A，<br>新开一个终端，叫终端 B，输以下命令：</p>
+<pre class=" language-bash"><code class="language-bash">geth init genesis.json --datadir <span class="token string">"/Users/lidelin/work/blockchain/ethereum/node2"</span>
+geth --networkid 123 --datadir <span class="token string">"/Users/lidelin/work/blockchain/ethereum/node2"</span> --port 30304 console
+</code></pre>
+<ul>
+<li>创建创世区块用的 genesis.json 和刚才的一样</li>
+<li>加 –port 30304 是 30303 已经被终端 A 挖矿的那个节点用了</li>
+</ul>
+<p>在终端 A 输以下命令查看节点信息</p>
+<pre class=" language-bash"><code class="language-bash">admin.nodeInfo.enode
+</code></pre>
+<p>节点信息如下所示</p>
+<pre><code>&quot;enode://ce966c1a9db2a15ff6f6eebc0e53790ed0ec8edbbb45a50c59fd2f6f9da68665259f98a932732301513c25389c64621ac3aae582fba6f4c6b0821d7aa9867a63@10.1.1.67:30303&quot;
+</code></pre><p>在终端 B 输以下命令添加同步节点：</p>
+<pre class=" language-bash"><code class="language-bash">admin.addPeer<span class="token punctuation">(</span><span class="token string">"enode://ce966c1a9db2a15ff6f6eebc0e53790ed0ec8edbbb45a50c59fd2f6f9da68665259f98a932732301513c25389c64621ac3aae582fba6f4c6b0821d7aa9867a63@10.1.1.67:30303"</span><span class="token punctuation">)</span>
+</code></pre>
+<p>当出现以下 log 时表示开始同步节点数据</p>
+<pre><code>INFO [08-06|02:15:33] Imported new chain segment               blocks=1  txs=0 mgas=0.000 elapsed=9.969ms   mgasps=0.000 number=57 hash=96fcad…29db76
+INFO [08-06|02:15:39] Imported new chain segment               blocks=1  txs=0 mgas=0.000 elapsed=10.226ms  mgasps=0.000 number=58 hash=5fcaba…77a450
+INFO [08-06|02:15:40] Imported new chain segment               blocks=1  txs=0 mgas=0.000 elapsed=8.901ms   mgasps=0.000 number=59 hash=adc477…36bfa8
+</code></pre>
+            </div>
+            <hr>
+
+            
+
+            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
+    
+</div>
+
+<script src="/libs/share/js/social-share.min.js"></script>
+
+            <div class="reprint">
+                <p>
+                    <span class="reprint-tip">
+                        <i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;转载请注明:
+                    </span>
+                    <a href="https://lidelin.github.io" class="b-link-green">LDL's Blog</a>
+                    <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
+                    <a href="/2018/08/06/yi-tai-fang-si-lian-da-jian/" class="b-link-green">以太坊私链搭建</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2018/08/11/cong-ling-kai-shi-da-jian/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="基于 Docker 从零搭建 LNMP 环境">
+                        
+                        <span class="card-title">基于 Docker 从零搭建 LNMP 环境</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">上周有位同事让我分享一下怎么用 docker，由于之前一直在用 laradock ，还没试过基于 Docker 搭建 LNMP 环境，今天借着做作业的机会来实践总结一下。
+什么是 Docker参考这篇文章的定义：Docker是一个开源的引擎</div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2018-08-11
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-user fa-fw"></i>
+                            lidelin
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/docker/" target="_blank">
+                        <span class="chip bg-color">docker</span>
+                    </a>
+                    
+                    <a href="/tags/lnmp/" target="_blank">
+                        <span class="chip bg-color">lnmp</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2018/07/29/shen-ru-laravel-zhi-yong-hu-ren-zheng-xi-tong/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="深入 Laravel 之用户认证系统">
+                        
+                        <span class="card-title">深入 Laravel 之用户认证系统</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">Laravel 的用户认证系统是由“守卫”和“提供者”组成的。守卫定义了该如何认证每个请求的用户。例如，Laravel 的 session 守卫用 session 存储和 cookies 来维护状态。提供者定义了怎样从持久化的存储中检索用户</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2018-07-29
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-user fa-fw"></i>
+                            lidelin
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Laravel/" target="_blank">
+                        <span class="chip bg-color">Laravel</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('120')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: LDL's Blog<br />'
+            + '作者: lidelin<br />'
+            + '链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fa fa-list"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).slideUp(500);
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).slideDown(500);
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+    
+
+</main>
+
+
+<footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            本站由&copy;<a href="https://lidelin.github.io/" target="_blank">Lidelin</a>基于
+            <a href="https://hexo.io/" target="_blank">Hexo</a> 的
+            <a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">hexo-theme-matery</a>主题搭建.
+
+            
+                &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
+                <span class="white-color">23.3k</span>
+            
+
+            
+			
+                <br>
+                
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa fa-heart-o"></i>
+                    本站总访问量 <span id="busuanzi_value_site_pv" class="white-color"></span>
+                </span>
+                
+                
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa fa-users"></i>
+                    次,&nbsp;访客数 <span id="busuanzi_value_site_uv" class="white-color"></span> 人.
+                </span>
+                
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/lidelin" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fa fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:494747693@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=494747693" class="tooltipped" data-tooltip="QQ联系我: 494747693" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+<!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fa fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字" class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+<!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fa fa-angle-up"></i>
+    </a>
+</div>
+
+
+<script src="/libs/materialize/materialize.min.js"></script>
+<script src="/libs/masonry/masonry.pkgd.min.js"></script>
+<script src="/libs/aos/aos.js"></script>
+<script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+<script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+<script src="/js/matery.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+
+
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>

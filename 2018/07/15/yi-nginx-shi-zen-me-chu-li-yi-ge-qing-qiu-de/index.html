@@ -1,0 +1,896 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="(译) Nginx 是怎么处理一个请求的, php,laravel">
+    <meta name="description" content="原文：How nginx processes a request
+基于服务器名的虚拟服务器首先，nginx 会先判断应该由哪个服务器来处理请求。我们来看一个简单的配置文件，这个配置文件配置了三个监听 80 端口的虚拟服务器：
+server ">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>(译) Nginx 是怎么处理一个请求的 | LDL&#39;s Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <style type="text/css">
+        
+    </style>
+
+    <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+
+<header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">LDL's Blog</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fa fa-navicon"></i></a>
+<ul class="right">
+    
+    <li class="hide-on-med-and-down">
+        <a href="/" class="waves-effect waves-light">
+            
+            <i class="fa fa-home"></i>
+            
+            <span>首页</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/tags" class="waves-effect waves-light">
+            
+            <i class="fa fa-tags"></i>
+            
+            <span>标签</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/categories" class="waves-effect waves-light">
+            
+            <i class="fa fa-bookmark"></i>
+            
+            <span>分类</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/archives" class="waves-effect waves-light">
+            
+            <i class="fa fa-archive"></i>
+            
+            <span>归档</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/about" class="waves-effect waves-light">
+            
+            <i class="fa fa-user-circle-o"></i>
+            
+            <span>关于</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/friends" class="waves-effect waves-light">
+            
+            <i class="fa fa-address-book"></i>
+            
+            <span>友情链接</span>
+        </a>
+    </li>
+    
+    <li>
+        <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+            <i id="searchIcon" class="fa fa-search" title="搜索"></i>
+        </a>
+    </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">LDL's Blog</div>
+        <div class="logo-desc">
+            
+            Never really desperate, only the lost of the soul.
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li>
+            <a href="/" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-home"></i>
+                
+                首页
+            </a>
+        </li>
+        
+        <li>
+            <a href="/tags" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-tags"></i>
+                
+                标签
+            </a>
+        </li>
+        
+        <li>
+            <a href="/categories" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-bookmark"></i>
+                
+                分类
+            </a>
+        </li>
+        
+        <li>
+            <a href="/archives" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-archive"></i>
+                
+                归档
+            </a>
+        </li>
+        
+        <li>
+            <a href="/about" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-user-circle-o"></i>
+                
+                关于
+            </a>
+        </li>
+        
+        <li>
+            <a href="/friends" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-address-book"></i>
+                
+                友情链接
+            </a>
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/lidelin" class="waves-effect waves-light" target="_blank">
+                <i class="fa fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/lidelin" class="github-corner tooltipped hide-on-med-and-down" target="_blank" data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewbox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        (译) Nginx 是怎么处理一个请求的
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 20px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/nginx/" target="_blank">
+                                <span class="chip bg-color">nginx</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                <div class="post-date info-break-policy">
+                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2018-07-15
+                </div>
+
+                
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
+                        1.4k
+                    </div>
+                    
+
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                        5 分
+                    </div>
+                    
+                
+				
+				
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="fa fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>原文：<a href="http://nginx.org/en/docs/http/request_processing.html" target="_blank" rel="noopener">How nginx processes a request</a></p>
+<h1 id="基于服务器名的虚拟服务器"><a href="#基于服务器名的虚拟服务器" class="headerlink" title="基于服务器名的虚拟服务器"></a>基于服务器名的虚拟服务器</h1><p>首先，nginx 会先判断应该由哪个服务器来处理请求。我们来看一个简单的配置文件，这个配置文件配置了三个监听 80 端口的虚拟服务器：</p>
+<pre><code>server {
+    listen      80;
+    server_name example.org www.example.org;
+    ...
+}
+
+server {
+    listen      80;
+    server_name example.net www.example.net;
+    ...
+}
+
+server {
+    listen      80;
+    server_name example.com www.example.com;
+    ...
+}
+</code></pre><p>在这个配置中，nginx 只会检测请求头的 “Host” 字段，来决定请求应该被路由到哪个服务器。如果没有匹配的域名，或者请求头没带 “Host” 字段，nginx 会把请求路由到监听这个端口的默认服务器。在上面的配置中，默认服务器是第一个，这是 nginx 的默认行为。也可以用 default_server 这个监听指令来显式地指定默认服务器。</p>
+<pre><code>server {
+    listen      80 default_server;
+    server_name example.net www.example.net;
+    ...
+}
+</code></pre><blockquote>
+<p>0.8.21 之后的版本可以用 default_server 这个参数，而之前的版本应该用 default </p>
+</blockquote>
+<p><strong>需要注意一下，默认服务器是监听端口的一个属性，而不是服务器名的属性。</strong></p>
+<h1 id="如何不处理没有定义服务器名的请求"><a href="#如何不处理没有定义服务器名的请求" class="headerlink" title="如何不处理没有定义服务器名的请求"></a>如何不处理没有定义服务器名的请求</h1><p>如果一个请求的请求头没有 “Host” 自动，那么这个请求不该被处理，一个丢弃这些请求的服务器配置可以这样定义：</p>
+<pre><code>server {
+    listen      80;
+    server_name &quot;&quot;;
+    return      444;
+}
+</code></pre><p>以上配置，服务器名设为一个空字符串，这样会匹配那些没设 “Host” 字段的请求，然后返回一个特殊的 nginx 的非标准返回码 444 并且关闭连接。</p>
+<blockquote>
+<p>从 0.8.48 版本开始，这是服务器名的默认配置，所以 server_name “” 可以忽略掉。而在之前的版本，服务器的主机名会被用作默认服务器名。</p>
+</blockquote>
+<h1 id="基于服务器名和基于-IP-混合配置的虚拟服务器"><a href="#基于服务器名和基于-IP-混合配置的虚拟服务器" class="headerlink" title="基于服务器名和基于 IP 混合配置的虚拟服务器"></a>基于服务器名和基于 IP 混合配置的虚拟服务器</h1><p>我们来看一个复杂的配置，这个配置配置了几个监听不同地址的虚拟服务器：</p>
+<pre><code>server {
+    listen      192.168.1.1:80;
+    server_name example.org www.example.org;
+    ...
+}
+
+server {
+    listen      192.168.1.1:80;
+    server_name example.net www.example.net;
+    ...
+}
+
+server {
+    listen      192.168.1.2:80;
+    server_name example.com www.example.com;
+    ...
+}
+</code></pre><p>在这个配置中，nginx 会先根据在 server 区块中配置的要监听的 IP 地址和端口来检测请求。然后在匹配的 IP 地址和端口的配置中，再检测请求的 “Host” 字段。如果服务器名没被找到，请求就会被默认服务器处理。举个例子，一个从 192.168.1.1:80 收到的，<a href="http://www.example.com" target="_blank" rel="noopener">www.example.com</a> 请求，会被 192.168.1.1:80 的默认服务器处理，也即给第一个服务器处理，因为这个端口没定义处理 <a href="http://www.example.com" target="_blank" rel="noopener">www.example.com</a> 的虚拟服务器。<br>如之前所说的，默认服务器是监听端口的一个属性，不同的端口可以定义不同的默认服务器：</p>
+<pre><code>server {
+    listen      192.168.1.1:80;
+    server_name example.org www.example.org;
+    ...
+}
+
+server {
+    listen      192.168.1.1:80 default_server;
+    server_name example.net www.example.net;
+    ...
+}
+
+server {
+    listen      192.168.1.2:80 default_server;
+    server_name example.com www.example.com;
+    ...
+}
+</code></pre><h1 id="一个简单的-PHP-网站的配置"><a href="#一个简单的-PHP-网站的配置" class="headerlink" title="一个简单的 PHP 网站的配置"></a>一个简单的 PHP 网站的配置</h1><p>我们来看一下，在一个经典的，简单的 PHP 网站中，nginx 处理请求的时候是怎么选择 location 的。</p>
+<pre><code>server {
+    listen      80;
+    server_name example.org www.example.org;
+    root        /data/www;
+
+    location / {
+        index   index.html index.php;
+    }
+
+    location ~* \.(gif|jpg|png)$ {
+        expires 30d;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass  localhost:9000;
+        fastcgi_param SCRIPT_FILENAME
+                      $document_root$fastcgi_script_name;
+        include       fastcgi_params;
+    }
+}
+</code></pre><p>nginx 会先搜索特定字符串所给出的前缀位置，而不是考虑所列出的顺序。在上面的配置中，唯一的前缀位置是“/”，它会匹配所有的请求，所以最后才会用到。nginx 会按顺序检查在配置文件中列出的正则表达式，并使用第一个匹配的位置。如果没找到匹配的正则表达式，nginx 会用最特别的“/”位置。<br>需要注意的是，所有的位置只会检查请求的 URI 部分，不会检查参数。因为 query 参数可以按几种不同的方式给出，如：</p>
+<pre><code>/index.php?user=john&amp;page=1
+/index.php?page=1&amp;user=john
+</code></pre><p>另外，请求的 query 字符串可能出现随便什么东西：</p>
+<pre><code>/index.php?page=1&amp;something+else&amp;user=john
+</code></pre><p>我们来看一下根据上面的配置，一个请求会被怎么处理：</p>
+<ul>
+<li>“logo.gif” 请求会先匹配前缀位置“/”，然后再匹配正则表达式“.(gif|jpg|png)$”。因此这个请求会被后面的位置处理。因为用了“root /data/www”指令，所以请求会被映射到 /data/www/logo.gif 文件，然后这个文件就会被发给客户端。</li>
+<li>“/index.php” 也会先匹配前缀位置“/”，然后再匹配正则表达式“.(php)$”。因此这个请求会被后面的 location 处理，请求会被传给监听 localhost:9000 的 FastCGI 服务器。fastcgi_param 指令设置了 FastCGI 参数 SCRIPT_FILENAME 为 “/data/www/index.php”，FastCGI 服务器执行这个文件。变量 $document_root 等于 root 指令定义的值，变量 $fastcgi_script_name 等于请求的 URI，即 “/index.php”。</li>
+<li>“/about.html”请求只匹配前缀位置“/”，因此会被这个 location 处理。因为用了“root /data/www”指令，所以请求会被映射到 /data/www/about.html 文件，然后这个文件就会被发给客户端。</li>
+<li>处理“/”请求会复杂一点。请求只匹配前缀位置“/”，因此会被这个 location 处理。然后 index 指令会根据“root /data/www”指令设定的参数检查 index 文件的存在。如果 /data/www/index.html 文件不存在，而 /data/www/index.php 文件存在，index 指令会做一个内部的重定向到“index.php”，然后 nginx 会再次搜索 locations 。如我们之前看到的，被重定向的请求最终会被 FastCGI 服务器处理。</li>
+</ul>
+
+            </div>
+            <hr>
+
+            
+
+            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
+    
+</div>
+
+<script src="/libs/share/js/social-share.min.js"></script>
+
+            <div class="reprint">
+                <p>
+                    <span class="reprint-tip">
+                        <i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;转载请注明:
+                    </span>
+                    <a href="https://lidelin.github.io" class="b-link-green">LDL's Blog</a>
+                    <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
+                    <a href="/2018/07/15/yi-nginx-shi-zen-me-chu-li-yi-ge-qing-qiu-de/" class="b-link-green">(译) Nginx 是怎么处理一个请求的</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2018/07/21/yi-yong-nginx-shi-xian-http-fu-zai-jun-heng-qi/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="(译) 用 Nginx 实现 Http 负载均衡器">
+                        
+                        <span class="card-title">(译) 用 Nginx 实现 Http 负载均衡器</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">原文：Using nginx as HTTP load balancer
+前言负载均衡，是用来优化资源使用、使吞吐率最大化、降低延时和保证系统容错的一种通用技术。nginx 可以作为一个非常高效的 HTTP 负载均衡器，将流量分配给多个应用</div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2018-07-21
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-user fa-fw"></i>
+                            lidelin
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/nginx/" target="_blank">
+                        <span class="chip bg-color">nginx</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2018/07/04/shen-ru-laravel-zhi-huan-cun-xi-tong/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="深入 Laravel 之缓存系统">
+                        
+                        <span class="card-title">深入 Laravel 之缓存系统</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">Laravel 为各种后端缓存系统提供了丰富统一的 API，这节我们来看看 Laravel 的缓存系统。
+缓存系统的 interface缓存系统的主要接口有两个：
+
+Illuminate\Contracts\Cache\Repository</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2018-07-04
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-user fa-fw"></i>
+                            lidelin
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Laravel/" target="_blank">
+                        <span class="chip bg-color">Laravel</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('120')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: LDL's Blog<br />'
+            + '作者: lidelin<br />'
+            + '链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fa fa-list"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).slideUp(500);
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).slideDown(500);
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+    
+
+</main>
+
+
+<footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            本站由&copy;<a href="https://lidelin.github.io/" target="_blank">Lidelin</a>基于
+            <a href="https://hexo.io/" target="_blank">Hexo</a> 的
+            <a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">hexo-theme-matery</a>主题搭建.
+
+            
+                &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
+                <span class="white-color">23.3k</span>
+            
+
+            
+			
+                <br>
+                
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa fa-heart-o"></i>
+                    本站总访问量 <span id="busuanzi_value_site_pv" class="white-color"></span>
+                </span>
+                
+                
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa fa-users"></i>
+                    次,&nbsp;访客数 <span id="busuanzi_value_site_uv" class="white-color"></span> 人.
+                </span>
+                
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/lidelin" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fa fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:494747693@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=494747693" class="tooltipped" data-tooltip="QQ联系我: 494747693" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+<!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fa fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字" class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+<!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fa fa-angle-up"></i>
+    </a>
+</div>
+
+
+<script src="/libs/materialize/materialize.min.js"></script>
+<script src="/libs/masonry/masonry.pkgd.min.js"></script>
+<script src="/libs/aos/aos.js"></script>
+<script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+<script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+<script src="/js/matery.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+
+
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>
