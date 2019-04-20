@@ -6,16 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="https://lidelin.github.io">
-  <title>Archives: 2018/7 | LDL&#39;s Blog</title>
+  <title>Docker 技术基础之 Namespace | LDL&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="keywords" content="php,laravel">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LDL&#39;s Blog">
-<meta property="og:url" content="https://lidelin.github.io/archives/2018/07/index.html">
+  <meta name="description" content="看到 Namespace 这个关键字，很多人可能会以为是 C++ 或者 PHP 等编程语言中的 Namespace。其实不然，这里说 Namespace，是 Linux 的 Namespace，容器技术的基础之一。 简介Namespace 是 Linux Kernel 的一个功能，是对整个系统资源的一种抽象，主要用于资源隔离。在同一 namespace 下的所有进程有它们自己独立隔离的系统资源，系">
+<meta name="keywords" content="docker,linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker 技术基础之 Namespace">
+<meta property="og:url" content="https://lidelin.github.io/2019/04/20/docker-ji-zhu-ji-chu-zhi-namespace/index.html">
 <meta property="og:site_name" content="LDL&#39;s Blog">
+<meta property="og:description" content="看到 Namespace 这个关键字，很多人可能会以为是 C++ 或者 PHP 等编程语言中的 Namespace。其实不然，这里说 Namespace，是 Linux 的 Namespace，容器技术的基础之一。 简介Namespace 是 Linux Kernel 的一个功能，是对整个系统资源的一种抽象，主要用于资源隔离。在同一 namespace 下的所有进程有它们自己独立隔离的系统资源，系">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-04-20T15:44:52.103Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LDL&#39;s Blog">
+<meta name="twitter:title" content="Docker 技术基础之 Namespace">
+<meta name="twitter:description" content="看到 Namespace 这个关键字，很多人可能会以为是 C++ 或者 PHP 等编程语言中的 Namespace。其实不然，这里说 Namespace，是 Linux 的 Namespace，容器技术的基础之一。 简介Namespace 是 Linux Kernel 的一个功能，是对整个系统资源的一种抽象，主要用于资源隔离。在同一 namespace 下的所有进程有它们自己独立隔离的系统资源，系">
   
     <link rel="alternative" href="/atom.xml" title="LDL&#39;s Blog" type="application/atom+xml">
   
@@ -133,174 +137,306 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Docker-技术基础之-Namespace" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Docker 技术基础之 Namespace
+    </h1>
+  
+
+        
+        <a href="/2019/04/20/docker-ji-zhu-ji-chu-zhi-namespace/" class="archive-article-date">
+  	<time datetime="2019-04-20T11:38:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-20</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>看到 Namespace 这个关键字，很多人可能会以为是 C++ 或者 PHP 等编程语言中的 Namespace。其实不然，这里说 Namespace，是 Linux 的 Namespace，容器技术的基础之一。</p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Namespace 是 Linux Kernel 的一个功能，是对整个系统资源的一种抽象，主要用于资源隔离。在同一 namespace 下的所有进程有它们自己独立隔离的系统资源，系统资源的变化只对该 namespace 下的进程可见，对其他进程不可见。</p>
+<a id="more"></a>
+<h1 id="Namespace-类型"><a href="#Namespace-类型" class="headerlink" title="Namespace 类型"></a>Namespace 类型</h1><table>
+<thead>
+<tr>
+<th>Namespace</th>
+<th>系统参数</th>
+<th>隔离内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IPC</td>
+<td>CLONE_NEWIPC</td>
+<td>System V IPC, POSIX 消息队列</td>
+</tr>
+<tr>
+<td>Network</td>
+<td>CLONE_NEWNET</td>
+<td>网络设备、网络栈、端口等</td>
+</tr>
+<tr>
+<td>Mount</td>
+<td>CLONE_NEWNS</td>
+<td>挂载点</td>
+</tr>
+<tr>
+<td>PID</td>
+<td>CLONE_NEWPID</td>
+<td>进程 ID</td>
+</tr>
+<tr>
+<td>User</td>
+<td>CLONE_NEWUSER</td>
+<td>用户和用户组 IDs</td>
+</tr>
+<tr>
+<td>UTS</td>
+<td>CLONE_NEWUTS</td>
+<td>主机名和网络信息域名</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>PS: System V 引入了三种高级进程间的通信机制：消息队列、共享内存和信号量</p>
+</blockquote>
+<h1 id="Namespace-在-proc-目录的内容"><a href="#Namespace-在-proc-目录的内容" class="headerlink" title="Namespace 在 /proc 目录的内容"></a>Namespace 在 /proc 目录的内容</h1><p>每个进程都会有一个 /proc/[pid]/ns/ 的子目录，在该目录下会有每个 Namespace 的入口：</p>
+<pre class=" language-bash"><code class="language-bash">root@iZwz9a9kyixoqw1qrxhvpqZ:~<span class="token comment" spellcheck="true"># ls /proc/$$/ns -l</span>
+total 0
+lrwxrwxrwx 1 root root 0 Apr 20 21:50 ipc -<span class="token operator">></span> ipc:<span class="token punctuation">[</span>4026531839<span class="token punctuation">]</span>
+lrwxrwxrwx 1 root root 0 Apr 20 21:50 mnt -<span class="token operator">></span> mnt:<span class="token punctuation">[</span>4026531840<span class="token punctuation">]</span>
+lrwxrwxrwx 1 root root 0 Apr 20 21:50 net -<span class="token operator">></span> net:<span class="token punctuation">[</span>4026531957<span class="token punctuation">]</span>
+lrwxrwxrwx 1 root root 0 Apr 20 21:50 pid -<span class="token operator">></span> pid:<span class="token punctuation">[</span>4026531836<span class="token punctuation">]</span>
+lrwxrwxrwx 1 root root 0 Apr 20 21:50 user -<span class="token operator">></span> user:<span class="token punctuation">[</span>4026531837<span class="token punctuation">]</span>
+lrwxrwxrwx 1 root root 0 Apr 20 21:50 uts -<span class="token operator">></span> uts:<span class="token punctuation">[</span>4026531838<span class="token punctuation">]</span>
+</code></pre>
+<p>每个文件都是对应 namespace 的文件描述符，方括号里面的值是 namespace 的 inode，如果两个进程所在的 namespace 一样，那么它们列出来的 inode 是一样的；反之亦然。如果某个 namespace 中没有进程了，它会被自动删除，不需要手动删除。但是有个例外，如果 namespace 对应的文件某个应用程序打开，那么该 namespace 是不会被删除的，这个特性可以让我们保持住某个 namespace，以便后面往里面添加进程。</p>
+<h1 id="牛刀小试"><a href="#牛刀小试" class="headerlink" title="牛刀小试"></a>牛刀小试</h1><h2 id="三个系统调用"><a href="#三个系统调用" class="headerlink" title="三个系统调用"></a>三个系统调用</h2><ul>
+<li>clone</li>
+</ul>
+<p>创建一个新进程，并设置对应的 namespace</p>
+<pre class=" language-c"><code class="language-c"><span class="token comment" spellcheck="true">/* Prototype for the glibc wrapper function */</span>
+
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;sched.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">clone</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>fn<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>child_stack<span class="token punctuation">,</span>
+          <span class="token keyword">int</span> flags<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>arg<span class="token punctuation">,</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+          <span class="token comment" spellcheck="true">/* pid_t *ptid, struct user_desc *tls, pid_t *ctid */</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>参数说明：</p>
+<ol>
+<li>*fn: 子进程启动时执行的函数 </li>
+<li>*child_stack: 子进程执行时使用的栈内存</li>
+<li>flag: 子进程启动的配置信息，包括信号、namespace 等</li>
+<li>*arg: 传给子进程的参数</li>
+</ol>
+<ul>
+<li>setns</li>
+</ul>
+<p>把一个进程加到一个已存在的 namespace</p>
+<ul>
+<li>unshare</li>
+</ul>
+<p>把一个进程移到一个新的 namespace</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><ul>
+<li>PID Namespace</li>
+</ul>
+<pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">define</span> _GNU_SOURCE</span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;sys/types.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;sys/wait.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;sched.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;signal.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+
+<span class="token macro property">#<span class="token directive keyword">define</span> STACK_SIZE (1024 * 1024)</span>
+
+<span class="token keyword">static</span> <span class="token keyword">char</span> child_stack<span class="token punctuation">[</span>STACK_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token keyword">int</span> <span class="token function">child_main</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span>arg<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    pid_t pid <span class="token operator">=</span> <span class="token function">getpid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Child pid: [%d]\n"</span><span class="token punctuation">,</span> pid<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    pid_t pid <span class="token operator">=</span> <span class="token function">getpid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Parent pid: [%d]\n"</span><span class="token punctuation">,</span> pid<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    pid_t child_pid <span class="token operator">=</span> <span class="token function">clone</span><span class="token punctuation">(</span>child_main<span class="token punctuation">,</span>
+                            child_stack <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>child_stack<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">/* Points to start of downwardly growing stack */</span>
+                            SIGCHLD<span class="token punctuation">,</span>
+                            <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">waitpid</span><span class="token punctuation">(</span>child_pid<span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Parent - child process stopped!\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>运行结果</p>
+<pre class=" language-bash"><code class="language-bash">root@iZwz9a9kyixoqw1qrxhvpqZ:~<span class="token comment" spellcheck="true"># ./a.out</span>
+Parent pid: <span class="token punctuation">[</span>9434<span class="token punctuation">]</span>
+Child pid: <span class="token punctuation">[</span>9435<span class="token punctuation">]</span>
+Parent - child process stopped<span class="token operator">!</span>
+</code></pre>
+<p>可以看到父进程的 PID 是 9434，子进程的 PID 是 9435，说明父进程和子进程在同一个 namespace</p>
+<p>我们小作修改，在调用 clone 的第三个参数加上 CLONE_NEWPID</p>
+<pre class=" language-c"><code class="language-c">
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+pid_t child_pid <span class="token operator">=</span> <span class="token function">clone</span><span class="token punctuation">(</span>child_main<span class="token punctuation">,</span>
+                            child_stack <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>child_stack<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">/* Points to start of downwardly growing stack */</span>
+                            CLONE_NEWPID <span class="token operator">|</span> SIGCHLD<span class="token punctuation">,</span>
+                            <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+</code></pre>
+<p>运行结果</p>
+<pre class=" language-bash"><code class="language-bash">root@iZwz9a9kyixoqw1qrxhvpqZ:~<span class="token comment" spellcheck="true"># ./a.out</span>
+Parent pid: <span class="token punctuation">[</span>8984<span class="token punctuation">]</span>
+Child pid: <span class="token punctuation">[</span>1<span class="token punctuation">]</span>
+Parent - child process stopped<span class="token operator">!</span>
+</code></pre>
+<p>可以看到父进程的 PID 是 3725，子进程的 PID 是 1，说明子进程在一个新的 PID namespace</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文主要介绍了以下内容：</p>
+<ol>
+<li>简单介绍了 Linux 的 Namespace</li>
+<li>列举了 Namespace 的类型</li>
+<li>简单介绍了 Namespace 在 /proc 目录的内容</li>
+<li>介绍了和 namespace 相关的系统调用</li>
+<li>实践了 PID Namespace</li>
+</ol>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://en.wikipedia.org/wiki/Linux_namespaces" target="_blank" rel="noopener">1. Wikipedia Linux Namespaces</a><br><a href="https://coolshell.cn/articles/17010.html" target="_blank" rel="noopener">2. DOCKER基础技术：LINUX NAMESPACE（上）</a><br><a href="https://coolshell.cn/articles/17029.html" target="_blank" rel="noopener">3. DOCKER基础技术：LINUX NAMESPACE（下）</a><br><a href="https://www.infoq.cn/article/docker-kernel-knowledge-namespace-resource-isolation" target="_blank" rel="noopener">4. Docker 背后的内核知识——Namespace 资源隔离</a><br><a href="https://lwn.net/Articles/531114/" target="_blank" rel="noopener">5. Namespaces in operation, part 1: namespaces overview</a><br><a href="https://cizixs.com/2017/08/29/linux-namespace/" target="_blank" rel="noopener">6. docker 容器基础技术：linux namespace 简介</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/29/shen-ru-laravel-zhi-yong-hu-ren-zheng-xi-tong/" class="archive-article-date">
-  	<time datetime="2018-07-29T07:49:18.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/29/shen-ru-laravel-zhi-yong-hu-ren-zheng-xi-tong/">深入 Laravel 之用户认证系统</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Laravel</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">docker,linux</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://lidelin.github.io/2019/04/20/docker-ji-zhu-ji-chu-zhi-namespace/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/21/yi-yong-nginx-shi-xian-http-fu-zai-jun-heng-qi/" class="archive-article-date">
-  	<time datetime="2018-07-21T03:17:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-21</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/03/18/kubernetes-chu-tan/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Kubernetes 初探</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/21/yi-yong-nginx-shi-xian-http-fu-zai-jun-heng-qi/">(译) 用 Nginx 实现 Http 负载均衡器</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">nginx</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/15/yi-nginx-shi-zen-me-chu-li-yi-ge-qing-qiu-de/" class="archive-article-date">
-  	<time datetime="2018-07-15T14:01:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/15/yi-nginx-shi-zen-me-chu-li-yi-ge-qing-qiu-de/">(译) Nginx 是怎么处理一个请求的</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">nginx</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/04/shen-ru-laravel-zhi-huan-cun-xi-tong/" class="archive-article-date">
-  	<time datetime="2018-07-04T15:53:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/04/shen-ru-laravel-zhi-huan-cun-xi-tong/">深入 Laravel 之缓存系统</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Laravel</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -323,8 +459,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
